@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"crypto/sha1"
+	"errors"
 
 	"github.com/Users/natza/telegaBot/lib/e"
 )
@@ -14,6 +15,8 @@ type Storage interface {
 	Remove(p *Page) error
 	IsExists(p *Page) (bool, error)
 }
+
+var ErrNoSavePages = errors.New("no saved page")
 
 type Page struct {
 	URL      string
