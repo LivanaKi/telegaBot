@@ -29,10 +29,13 @@ func (p *Processor) doCmd(text string, chatID int, username string) error {
 
 	switch text {
 	case RndCmd:
-		return p.SendRandom()
+		return p.SendRandom(chatID, username)
 	case HelpCmd:
+		return p.SendHelp(chatID)
 	case StartCmd:
+		return p.SendHello(chatID)
 	default:
+		return p.tg.SendMessage(chatID, msgUnknownCommand)
 	}
 }
 
@@ -62,7 +65,7 @@ func (p *Processor) savePage(chatID int, pageURL string, username string) (err e
 	return nil
 }
 
-func (p *Processor) SendMessage (chatID int, username string) (err error) {
+func (p *Processor) SendRandom (chatID int, username string) (err error) {
 	defer func() { err = e.Wrap("can't do command: can't send random", err)}()
 
 	page, err := p.storage.PickRandom(username)
