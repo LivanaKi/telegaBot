@@ -10,6 +10,8 @@ import (
 	"github.com/Users/natza/telegaBot/storage/files"
 )
 
+//6336153425:AAEmtiGS6iZead1F_EK7ZPo3c3taeccSZuc
+
 const(
 	tgBotHost = "api.telegram.org"
 	storagePath = "storage"
