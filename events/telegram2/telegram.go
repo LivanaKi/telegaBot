@@ -3,30 +3,31 @@ package telegram2
 import (
 	"errors"
 	"context"
-	
+
 	"github.com/Users/natza/telegaBot/clients/telegram"
 	"github.com/Users/natza/telegaBot/events"
 	"github.com/Users/natza/telegaBot/lib/e"
 	"github.com/Users/natza/telegaBot/storage"
 )
-
 type Processor struct {
-	tg *telegram.Client
-	offset int
+	tg      *telegram.Client
+	offset  int
 	storage storage.Storage
 }
 
-type Meta struct{
-	ChatID int
+type Meta struct {
+	ChatID   int
 	Username string
 }
 
-var ErrUnknownEventType = errors.New("unknown event type")
-var ErrUnknownMetaType = errors.New("unknown meta type")
+var (
+	ErrUnknownEventType = errors.New("unknown event type")
+	ErrUnknownMetaType  = errors.New("unknown meta type")
+)
 
-func New(client *telegram.Client, storage storage.Storage) *Processor{
+func New(client *telegram.Client, storage storage.Storage) *Processor {
 	return &Processor{
-		tg: client,
+		tg:      client,
 		storage: storage,
 	}
 }
@@ -74,19 +75,18 @@ func (p *Processor) processMessage(ctx context.Context, event events.Event) erro
 	return nil
 }
 
-
-func meta(event events.Event) (Meta, error){
+func meta(event events.Event) (Meta, error) {
 	res, ok := event.Meta.(Meta)
-	if !ok{
+	if !ok {
 		return Meta{}, e.Wrap("can't get meta", ErrUnknownMetaType)
 	}
 
 	return res, nil
 }
 
-func event(upd telegram.Update) events.Event{
+func event(upd telegram.Update) events.Event {
 	updType := fetchType(upd)
-	
+
 	res := events.Event{
 		Type: updType,
 		Text: fetchText(upd),
@@ -94,25 +94,26 @@ func event(upd telegram.Update) events.Event{
 
 	if updType == events.Message {
 		res.Meta = Meta{
-			ChatID: upd.Message.Chat.ID,
+			ChatID:   upd.Message.Chat.ID,
 			Username: upd.Message.From.Username,
 		}
 	}
+
 	return res
 }
 
-func fetchText(upd telegram.Update) string{
-	if upd.Message == nil{
+func fetchText(upd telegram.Update) string {
+	if upd.Message == nil {
 		return ""
 	}
-	
+
 	return upd.Message.Text
 }
 
 func fetchType(upd telegram.Update) events.Type {
-	if upd.Message == nil{
+	if upd.Message == nil {
 		return events.Unknown
 	}
-	
+
 	return events.Message
 }
